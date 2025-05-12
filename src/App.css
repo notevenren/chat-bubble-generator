@@ -279,6 +279,27 @@ body, html {
         justify-self: stretch;
     }
 }
+/* Attribution Text Styling */
+.attribution {
+  grid-column: 1 / -1; /* Make it span all columns in the grid */
+  text-align: center;
+  padding: 16px 0 0; /* Add some padding above it, especially from the last control group */
+  margin-top: 16px; /* Add margin to separate it further */
+  font-size: 0.8rem; /* Smaller font size */
+  color: var(--text-color-muted); /* Use a muted color */
+  border-top: 1px solid #e9ecef; /* Optional: Add a subtle line above it */
+}
+
+/* Adjustments for desktop sidebar layout */
+@media (min-width: 1024px) {
+  .attribution {
+     /* Reset grid-column as it's single column now */
+    grid-column: auto;
+    padding-bottom: 16px; /* Add padding at the very bottom of the sidebar */
+    margin-top: auto; /* Push it towards the bottom */
+    border-top: 1px solid #e9ecef; /* Keep the separator line */
+  }
+}
 
 
 /* Small screen tweaks */

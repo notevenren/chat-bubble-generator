@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { toPng } from 'html-to-image';
 import './App.css';
 
@@ -28,6 +28,35 @@ export default function App() {
 
   const previewRef = useRef();
   const tailSize = padding;
+
+    // --- useEffect Hook to set Title and Favicon ---
+    useEffect(() => {
+      // 1. Set the document title
+      const newTitle = 'Chat Bubble Generator'; // <-- Change your desired title here
+      document.title = newTitle;
+  
+      // 2. Set the favicon
+      let link = document.querySelector("link[rel~='icon']");
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'icon';
+        document.getElementsByTagName('head')[0].appendChild(link);
+      }
+      // Option A: Use an emoji as a favicon (simple, no external file needed)
+      const emojiFavicon = "💬"; // <-- Change your desired emoji here
+      const canvas = document.createElement('canvas');
+      canvas.height = 64;
+      canvas.width = 64;
+      const ctx = canvas.getContext('2d');
+      ctx.font = '48px serif';
+      ctx.fillText(emojiFavicon, 8, 50); // Adjust positioning if needed
+      link.href = canvas.toDataURL();
+  
+      // Option B: Use a URL to your favicon image (replace with your actual URL)
+      // const faviconUrl = 'YOUR_FAVICON_URL.png'; // <-- Put your favicon URL here
+      // link.href = faviconUrl;
+  
+    }, []); // Empty dependency array ensures this runs only once on mount
 
   const handleImageUpload = e => {
     const file = e.target.files[0];
@@ -283,6 +312,9 @@ export default function App() {
           <button className="download-btn" onClick={handleDownload}>
             Download Bubble
           </button>
+        </div>
+        <div className="attribution">
+          Made with ❤️ by {'Dawood'}
         </div>
       </div>
     </div>
