@@ -1,33 +1,49 @@
-/* CSS Custom Properties (Variables) for easy theming */
+/* CSS Custom Properties (Variables) for a refined theme */
 :root {
-  --primary-color: #007bff; /* A modern blue for interactive elements */
-  --primary-color-hover: #0056b3;
-  --primary-color-active: #004085;
+  --primary-color: #007AFF; /* A vibrant, modern blue */
+  --primary-color-hover: #005ECB;
+  --primary-color-active: #004BA0;
 
-  --secondary-color: #6c757d; /* For less prominent elements or text */
-  --success-color: #28a745; /* For success actions like download */
-  --success-color-hover: #218838;
+  --secondary-color: #6c757d;
+  --secondary-color-hover: #5a6268;
 
-  --body-bg: #f4f6f8; /* Slightly different main background */
-  --controls-panel-bg: #ffffff; /* Controls panel background */
-  --input-bg: #ffffff;
-  --input-border-color: #ced4da;
-  --input-focus-border-color: #80bdff;
-  --input-focus-box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+  --success-color: #34C759; /* A fresh, modern green */
+  --success-color-hover: #2DA64B;
 
-  --text-color: #212529; /* Main text color */
-  --text-color-muted: #6c757d;
-  --text-color-headings: #343a40;
+  --danger-color: #FF3B30; /* A modern red for destructive actions */
+  --danger-color-hover: #E0281E;
 
-  --border-radius-base: 0.375rem; /* 6px */
-  --border-radius-lg: 0.5rem;    /* 8px */
+  --body-bg: #F7F8FC; /* Lighter and cleaner body background */
+  --controls-panel-bg: #FFFFFF;
+  --input-bg: #FFFFFF; /* Cleaner input background */
+  --input-border-color: #D1D9E6; /* Softer border color */
+  --input-focus-border-color: var(--primary-color);
+  --input-focus-box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.15); /* Softer focus glow */
+
+  --text-color: #1C1C1E; /* Darker, more contrasted text */
+  --text-color-muted: #8A8A8E; /* Softer muted text */
+  --text-color-headings: #000000; /* Pure black for strong headings */
+
+  --border-radius-sm: 0.25rem;  /* 4px */
+  --border-radius-base: 0.5rem; /* 8px - more rounded */
+  --border-radius-lg: 0.75rem;   /* 12px */
 
   --font-family-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+
+  --shadow-sm: 0 2px 4px rgba(0,0,0,0.04);
+  --shadow-md: 0 4px 12px rgba(0,0,0,0.08); /* Softer, more diffused shadow */
+  --shadow-lg: 0 10px 25px rgba(0,0,0,0.1);
 }
 
 /* Global reset & base styles */
 * {
   box-sizing: border-box;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  font-size: 16px; /* Base font size */
 }
 
 body, html {
@@ -35,293 +51,452 @@ body, html {
   font-family: var(--font-family-sans-serif);
   background: var(--body-bg);
   color: var(--text-color);
-  line-height: 1.5;
+  line-height: 1.6; /* Slightly increased line height for readability */
 }
 
 /* App Container: column on mobile, row on desktop */
 .app-container {
   display: flex;
   flex-direction: column;
-  min-height: 100vh; /* Use min-height to allow content to expand */
+  min-height: 100vh;
 }
 
 /* Preview area: always center */
 .preview {
   flex: 1;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   position: relative;
-  padding: 20px; /* Add some padding around the preview */
+  padding: 30px;
+  overflow: hidden;
 }
 
-/* --- STYLES FOR THE MESSAGE BUBBLE (UNCHANGED as per request) --- */
+/* --- STYLES FOR THE MESSAGE BUBBLE --- */
 .capture {
   position: relative;
+  display: inline-block;
+}
+
+.bubble {
+  display: inline-block;
+  position: relative;
+  text-align: left;
+  word-wrap: break-word;
 }
 
 .bubble p {
   margin: 0;
+  padding: 0;
+  /* If you removed margin-bottom: 0.5em from p:not(:last-child), that's fine. */
+  /* Otherwise, it would be here: */
+  /* line-height: 1.4; /* This is controlled by inline style on .bubble */
 }
+/* Example if you want to control paragraph spacing within bubble via CSS: */
+/* .bubble p:not(:last-child) { */
+/* margin-bottom: 0; /* Or a small value like 0.2em if desired */
+/* } */
+
 
 .avatar-img {
   border-radius: 50%;
   object-fit: cover;
+  background-color: #e9ecef;
 }
 
 .speech-tail {
   position: absolute;
   bottom: 0;
+  left: 0;
   overflow: visible;
   pointer-events: none;
 }
-/* --- END OF UNCHANGED MESSAGE BUBBLE STYLES --- */
+/* --- END OF MESSAGE BUBBLE STYLES --- */
 
 
 /* CONTROLS PANEL */
 .controls-panel {
   background: var(--controls-panel-bg);
-  padding: 32px; /* Increased padding */
+  padding: 32px;
   display: grid;
-  gap: 32px; /* Consistent gap */
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Slightly larger minmax */
+  gap: 32px 24px;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   width: 100%;
-  box-shadow: 0 -3px 15px rgba(0, 0, 0, 0.07); /* Softer, more modern shadow */
-  border-top: 1px solid #e9ecef; /* Subtle top border */
+  box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.06);
+  border-top: 1px solid #EAECEF;
+  z-index: 100; /* Keep controls panel above other elements if necessary */
 }
 
 /* On desktop, move controls to right as a sidebar */
 @media (min-width: 1024px) {
   .app-container {
     flex-direction: row;
-    height: 100vh; /* Maintain full height for desktop layout */
+    height: 100vh;
+  }
+  .preview {
+    padding: 40px;
+    height: 100vh;
+    overflow: auto;
   }
   .controls-panel {
-    width: 360px; /* Slightly wider for more space */
-    min-width: 320px;
-    height: 100vh; /* Full height */
-    overflow-y: auto; /* Allow scrolling if content overflows */
-    box-shadow: -3px 0 15px rgba(0, 0, 0, 0.07);
+    width: 380px;
+    min-width: 340px;
+    height: 100vh;
+    overflow-y: auto;
+    box-shadow: -5px 0 20px rgba(0, 0, 0, 0.05);
     border-top: none;
-    border-left: 1px solid #e9ecef; /* Subtle left border on desktop */
-    padding: 32px 24px; /* Adjust padding for vertical layout */
-    grid-template-columns: 1fr; /* Single column on desktop sidebar */
+    border-left: 1px solid #EAECEF;
+    padding: 40px 28px;
+    grid-template-columns: 1fr; /* Single column for controls on desktop */
   }
+}
+
+/* 1) Group each control set into a “card” */
+.controls-panel .control-group {
+  background: var(--body-bg);                  /* light grey card bg */
+  padding: 1.5rem;                             /* a bit of breathing room */
+  border-radius: var(--border-radius-base);    /* 8px rounded corners */
+  box-shadow: var(--shadow-sm);                /* very light float */
+  /* preserve existing flex layout */
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* tighten up spacing between cards */
+.controls-panel {
+  gap: 24px 20px; /* smaller vertical gap */
+}
+
+/* 2) Add a soft shadow behind the bubble svg */
+.preview svg {
+  /* drop-shadow(offset-x offset-y blur color) */
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.08));
+  /* ensure the svg doesn’t clip its own shadow */
+  overflow: visible;
 }
 
 /* Control Grouping */
 .control-group {
   display: flex;
   flex-direction: column;
-  gap: 16px; /* Increased gap within groups */
+  gap: 12px;
 }
 
 .control-group h3 {
-  margin: 0 0 8px 0; /* Add some bottom margin */
-  font-size: 1.1rem; /* Slightly larger */
-  font-weight: 600;
+  margin: 0 0 10px 0;
+  font-size: 1rem;
+  font-weight: 700;
   color: var(--text-color-headings);
-  padding-bottom: 8px;
-  border-bottom: 1px solid #eee; /* Subtle separator for heading */
+  padding-bottom: 10px;
+  border-bottom: 1px solid #F0F2F5;
+  letter-spacing: -0.01em;
 }
 
 /* Labels */
 .controls-panel label {
-  font-size: 0.875rem; /* 14px */
+  font-size: 0.8125rem;
   font-weight: 500;
   color: var(--text-color-muted);
-  margin-bottom: -8px; /* Pulls input slightly closer to label */
+  margin-bottom: -4px;
+  display: block;
 }
 
 /* General Input, Select, Textarea Styling */
 .controls-panel input[type="text"],
 .controls-panel select,
-.controls-panel textarea,
-.controls-panel input[type="color"] {
+.controls-panel textarea {
   width: 100%;
-  padding: 0.625rem 0.875rem; /* 10px 14px */
-  font-size: 0.9375rem; /* 15px */
+  padding: 0.75rem 1rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
   border: 1px solid var(--input-border-color);
   border-radius: var(--border-radius-base);
   background-color: var(--input-bg);
   color: var(--text-color);
-  transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+  appearance: none;
+  -webkit-appearance: none;
+}
+.controls-panel input::placeholder,
+.controls-panel textarea::placeholder {
+  color: #B0B6BF;
+  opacity: 1;
+}
+
+.controls-panel input[type="text"]:hover,
+.controls-panel select:hover,
+.controls-panel textarea:hover {
+  border-color: #BCC5D3;
 }
 
 .controls-panel input[type="text"]:focus,
 .controls-panel select:focus,
-.controls-panel textarea:focus,
+.controls-panel textarea:focus {
+  border-color: var(--input-focus-border-color);
+  outline: 0;
+  box-shadow: var(--input-focus-box-shadow);
+  background-color: var(--input-bg);
+}
+
+.controls-panel select {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%238A8A8E' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 1rem center;
+  background-size: 1em 1em;
+  padding-right: 3rem;
+}
+
+.controls-panel textarea {
+  resize: vertical;
+  min-height: 100px;
+}
+
+.controls-panel input[type="color"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 48px;
+  padding: 0;
+  border: 1px solid var(--input-border-color);
+  border-radius: var(--border-radius-base);
+  background-color: var(--input-bg);
+  cursor: pointer;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.controls-panel input[type="color"]::-webkit-color-swatch-wrapper {
+  padding: 6px;
+  border-radius: var(--border-radius-base);
+}
+.controls-panel input[type="color"]::-webkit-color-swatch {
+  border: none;
+  border-radius: var(--border-radius-sm);
+}
+.controls-panel input[type="color"]::-moz-color-swatch {
+  border: none;
+  border-radius: var(--border-radius-sm);
+  margin: 6px;
+}
+.controls-panel input[type="color"]:hover {
+  border-color: #BCC5D3;
+}
 .controls-panel input[type="color"]:focus {
   border-color: var(--input-focus-border-color);
   outline: 0;
   box-shadow: var(--input-focus-box-shadow);
 }
 
-.controls-panel select {
-  appearance: none; /* Remove default arrow */
-  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
-  background-repeat: no-repeat;
-  background-position: right 0.875rem center;
-  background-size: 16px 12px;
-  padding-right: 2.5rem; /* Make space for custom arrow */
-}
-
-.controls-panel textarea {
-  resize: vertical;
-  min-height: 80px;
-}
-
-.controls-panel input[type="color"] {
-  padding: 0.25rem; /* Adjust padding for color input */
-  height: 40px; /* Consistent height */
-}
-
-/* Range Sliders */
 .controls-panel input[type="range"] {
   -webkit-appearance: none;
   appearance: none;
   width: 100%;
-  height: 8px; /* Slightly thicker track */
-  border-radius: 4px;
-  background: #e9ecef; /* Lighter track color */
+  height: 6px;
+  border-radius: 3px;
+  background: #E9EDF2;
   outline: none;
-  margin-top: 8px; /* Add some space */
-  margin-bottom: 4px;
+  padding: 0;
+  margin: 12px 0;
+  cursor: pointer;
+  transition: background 0.2s ease;
 }
-
+.controls-panel input[type="range"]:hover {
+  background: #DDE2E8;
+}
 .controls-panel input[type="range"]::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
-  width: 20px; /* Larger thumb */
+  width: 20px;
   height: 20px;
   border-radius: 50%;
   background: var(--primary-color);
-  cursor: pointer;
-  border: 2px solid var(--controls-panel-bg); /* Border to make it pop from track */
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  transition: background-color 0.15s ease-in-out;
+  border: 3px solid var(--controls-panel-bg);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(0,0,0,0.05);
+  transition: background-color 0.15s ease-in-out, transform 0.15s ease-in-out;
 }
-
+.controls-panel input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.1);
+}
+.controls-panel input[type="range"]::-webkit-slider-thumb:active {
+  background-color: var(--primary-color-active);
+  transform: scale(1.05);
+}
 .controls-panel input[type="range"]::-moz-range-thumb {
   width: 20px;
   height: 20px;
   border-radius: 50%;
   background: var(--primary-color);
   cursor: pointer;
-  border: 2px solid var(--controls-panel-bg);
-  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  transition: background-color 0.15s ease-in-out;
+  border: 3px solid var(--controls-panel-bg);
+  box-shadow: var(--shadow-sm), 0 0 0 1px rgba(0,0,0,0.05);
+  transition: background-color 0.15s ease-in-out, transform 0.15s ease-in-out;
 }
-
-.controls-panel input[type="range"]::-webkit-slider-thumb:hover,
 .controls-panel input[type="range"]::-moz-range-thumb:hover {
-  background-color: var(--primary-color-hover);
+  transform: scale(1.1);
 }
-.controls-panel input[type="range"]::-webkit-slider-thumb:active,
 .controls-panel input[type="range"]::-moz-range-thumb:active {
   background-color: var(--primary-color-active);
+  transform: scale(1.05);
 }
 
-
-/* File Input */
 .controls-panel input[type="file"] {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  color: var(--text-color-muted);
+  background-color: #F7F8FC;
   border: 1px dashed var(--input-border-color);
-  padding: 0.5rem;
-  background-color: #f8f9fa; /* Slightly different background for file input */
-}
-
-.controls-panel input[type="file"]::file-selector-button {
-  margin-right: 0.75rem;
-  border: 1px solid transparent;
-  background: var(--secondary-color);
-  padding: 0.5rem 0.75rem;
   border-radius: var(--border-radius-base);
-  color: #fff;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
   cursor: pointer;
-  transition: background-color 0.15s ease-in-out;
+}
+.controls-panel input[type="file"]:hover {
+  border-color: var(--primary-color);
+  background-color: #EFF3FA;
+}
+.controls-panel input[type="file"]::file-selector-button {
+  margin: -0.75rem 1rem -0.75rem -1rem;
+  padding: 0.75rem 1rem;
+  border: none;
+  border-right: 1px solid var(--input-border-color);
+  background: #E9EDF2;
+  color: var(--text-color);
+  font-weight: 500;
+  border-radius: var(--border-radius-base) 0 0 var(--border-radius-base);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+.controls-panel input[type="file"]:hover::file-selector-button {
+  background-color: #DDE2E8;
+  border-color: var(--primary-color);
 }
 
-.controls-panel input[type="file"]::file-selector-button:hover {
-  background: #5a6268;
-}
-
-/* Download Button */
-.download-btn {
-  padding: 0.75rem 1.5rem; /* 12px 24px */
-  font-size: 0.9375rem; /* 15px */
+.controls-panel button {
+  padding: 0.875rem 1.5rem;
+  font-size: 0.9375rem;
   font-weight: 600;
+  border: none;
+  border-radius: var(--border-radius-base);
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease, box-shadow 0.2s ease;
+  text-align: center;
+  width: 100%;
+  letter-spacing: 0.01em;
+  box-shadow: var(--shadow-sm);
+}
+.controls-panel button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+.controls-panel button:active {
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+
+.download-btn {
   background: var(--success-color);
   color: #fff;
-  border: none;
-  border-radius: var(--border-radius-lg);
-  cursor: pointer;
-  transition: background-color 0.15s ease-in-out, transform 0.1s ease;
-  text-align: center;
-  width: 100%; /* Make button full width in its group */
 }
-
 .download-btn:hover {
   background: var(--success-color-hover);
-  transform: translateY(-1px); /* Subtle lift */
 }
 
-.download-btn:active {
-  transform: translateY(0);
+.remove-avatar-btn {
+  background-color: var(--danger-color);
+  color: white;
+  margin-top: 8px;
+}
+.remove-avatar-btn:hover {
+  background-color: var(--danger-color-hover);
 }
 
-/* Export group alignment (especially on desktop) */
 .export-group {
-  margin-top: auto; /* Pushes to the bottom in flex/grid column */
+  margin-top: auto;
+  padding-top: 16px;
 }
 @media (min-width: 1024px) {
     .export-group {
-        align-self: stretch; /* Ensure it takes full width if needed */
+        align-self: stretch;
         justify-self: stretch;
     }
 }
-/* Attribution Text Styling */
+
+/* === ATTRIBUTION STYLING (FOR INSIDE CONTROLS PANEL) === */
 .attribution {
-  grid-column: 1 / -1; /* Make it span all columns in the grid */
+  /* Make it span all columns in the controls-panel grid if it's multi-column on smaller views */
+  grid-column: 1 / -1;
   text-align: center;
-  padding: 16px 0 0; /* Add some padding above it, especially from the last control group */
-  margin-top: 16px; /* Add margin to separate it further */
-  font-size: 0.8rem; /* Smaller font size */
-  color: var(--text-color-muted); /* Use a muted color */
-  border-top: 1px solid #e9ecef; /* Optional: Add a subtle line above it */
+  padding: 24px 0 16px 0; /* More padding top, less bottom */
+  margin-top: 16px; /* Add some margin to separate from the last control group */
+  font-size: 0.875rem;
+  color: var(--text-color-muted);
+  border-top: 1px solid #EAECEF; /* Subtle separator line */
+  position: relative; /* Keep it in normal flow */
+  z-index: 1; /* Just in case, but should not be an issue here */
 }
 
-/* Adjustments for desktop sidebar layout */
 @media (min-width: 1024px) {
   .attribution {
-     /* Reset grid-column as it's single column now */
-    grid-column: auto;
-    padding-bottom: 16px; /* Add padding at the very bottom of the sidebar */
-    margin-top: auto; /* Push it towards the bottom */
-    border-top: 1px solid #e9ecef; /* Keep the separator line */
+    /* On desktop, controls-panel is single column, so grid-column is not strictly needed but harmless */
+    grid-column: auto; /* Or 1 / -1; */
+    /* margin-top: auto; will push it to the bottom of the grid IF there's extra space.
+       If the controls panel content is taller than the viewport, this won't have a visible effect
+       as it will just be at the end of the scrollable content. */
+    margin-top: auto;
+    padding-top: 24px; /* Ensure consistent padding */
+    padding-bottom: 24px; /* Add padding at the very bottom of the sidebar */
   }
 }
+/* === END OF ATTRIBUTION STYLING === */
 
 
 /* Small screen tweaks */
-@media (max-width: 600px) {
+@media (max-width: 768px) {
   .controls-panel {
-    padding: 24px 16px; /* Adjust padding for smaller screens */
-    gap: 24px;
-  }
-  .control-group {
-    gap: 12px;
+    padding: 24px 20px;
+    gap: 28px 20px;
   }
   .control-group h3 {
-    font-size: 1rem;
+    font-size: 0.95rem;
   }
   .controls-panel label {
-    font-size: 0.8125rem; /* 13px */
+    font-size: 0.8rem;
   }
   .controls-panel input[type="text"],
   .controls-panel select,
   .controls-panel textarea,
-  .controls-panel input[type="color"] {
-    padding: 0.5rem 0.75rem; /* 8px 12px */
-    font-size: 0.875rem; /* 14px */
+  .controls-panel input[type="color"],
+  .controls-panel input[type="file"] {
+    padding: 0.625rem 0.875rem;
+    font-size: 0.875rem;
+  }
+  .controls-panel button {
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+  }
+  .attribution { /* Adjust attribution padding for smaller screens */
+    font-size: 0.8rem;
+    padding: 16px 0 10px 0;
+    margin-top: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 15px;
+  }
+  .preview {
+    padding: 20px 15px;
+  }
+  .bubble {
+      max-width: 90vw;
+  }
+  .controls-panel {
+    padding: 20px 16px;
+    gap: 24px 16px;
+  }
+  .control-group h3 {
+    font-size: 0.9rem;
   }
 }

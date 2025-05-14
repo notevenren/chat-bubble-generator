@@ -1,81 +1,125 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, {
+  useState,
+  useRef,
+  useLayoutEffect,
+  useEffect
+} from 'react';
 import { toPng } from 'html-to-image';
 import './App.css';
 
 export default function App() {
-  const [label, setLabel]                 = useState('yourcoworker asked');
-  const [text, setText]                   = useState(
-    'What tools or practices have you found most effective for managing feature flagging and production?'
-  );
+  // CONTENT
+  const [label, setLabel]   = useState('yourcoworker asked');
+  const [text, setText]     = useState('The quick brown fox jumps over the lazy dog.');
 
-  const [bgColor, setBgColor]             = useState('#ffffff');
-  const [textColor, setTextColor]         = useState('#000000');
-  const [borderRadius, setBorderRadius]   = useState(32);
-  const [padding, setPadding]             = useState(35);
+  // APPEARANCE
+  const [bgColor, setBgColor]           = useState('#ffffff');
+  const [textColor, setTextColor]       = useState('#000000');
+  const [labelTextColor, setLabelTextColor] = useState('#7a7d85');
+  const [borderRadius, setBorderRadius] = useState(32);
+  const [padding, setPadding]           = useState(35);
+  const [borderWidth, setBorderWidth]   = useState(0);
+  const [borderColor, setBorderColor]   = useState('#ffffff');
 
-  const [fontFamily, setFontFamily]       = useState('Inter, sans-serif');
-  const [labelFontSize, setLabelFontSize] = useState(27);
-  const [textFontSize, setTextFontSize]   = useState(48);
+  // TYPOGRAPHY
+  const [fontFamily, setFontFamily]         = useState('Inter, sans-serif');
+  const [labelFontSize, setLabelFontSize]   = useState(27);
+  const [textFontSize, setTextFontSize]     = useState(48);
   const [labelFontWeight, setLabelFontWeight] = useState('400');
   const [textFontWeight, setTextFontWeight]   = useState('600');
+  const [labelTracking, setLabelTracking]   = useState(0.0015);
+  const [textTracking, setTextTracking]     = useState(0);
 
-  const [labelTracking, setLabelTracking] = useState(0.015);
-  const [textTracking, setTextTracking]   = useState(0);
-
-  const [avatar, setAvatar]               = useState('/default-avatar.png');
-  const [avatarSize, setAvatarSize]       = useState(80);
+  // AVATAR
+  const [avatar, setAvatar]           = useState('/default-avatar.png');
+  const [avatarSize, setAvatarSize]   = useState(80);
   const [avatarSpacing, setAvatarSpacing] = useState(27);
 
-  const previewRef = useRef();
+  // WRAPPING
+  const [wordsPerLine, setWordsPerLine] = useState(4);
+
+  // TAIL POSITION
+  const [tailOffset, setTailOffset] = useState(0);  // 0 = flush left, 1 = flush right
+
+  // REFS & SIZING
+  const bubbleContentRef = useRef();
+  const previewRef       = useRef();
+  const [bubbleSize, setBubbleSize] = useState({ w: 0, h: 0 });
   const tailSize = padding;
 
-    // --- useEffect Hook to set Title and Favicon ---
-    useEffect(() => {
-      // 1. Set the document title
-      const newTitle = 'Chat Bubble Generator'; // <-- Change your desired title here
-      document.title = newTitle;
-  
-      // 2. Set the favicon
-      let link = document.querySelector("link[rel~='icon']");
-      if (!link) {
-        link = document.createElement('link');
-        link.rel = 'icon';
-        document.getElementsByTagName('head')[0].appendChild(link);
-      }
-      // Option A: Use an emoji as a favicon (simple, no external file needed)
-      const emojiFavicon = "💬"; // <-- Change your desired emoji here
-      const canvas = document.createElement('canvas');
-      canvas.height = 64;
-      canvas.width = 64;
-      const ctx = canvas.getContext('2d');
-      ctx.font = '48px serif';
-      ctx.fillText(emojiFavicon, 8, 50); // Adjust positioning if needed
-      link.href = canvas.toDataURL();
-  
-      // Option B: Use a URL to your favicon image (replace with your actual URL)
-      // const faviconUrl = 'YOUR_FAVICON_URL.png'; // <-- Put your favicon URL here
-      // link.href = faviconUrl;
-  
-    }, []); // Empty dependency array ensures this runs only once on mount
+  // split into lines
+  const words = text.trim().split(/\s+/);
+  const lines = [];
+  for (let i = 0; i < words.length; i += wordsPerLine) {
+    lines.push(words.slice(i, i + wordsPerLine).join(' '));
+  }
 
+  // COMPUTE TEXT & LABEL POSITIONS
+  const textX = padding + (avatar ? avatarSize + avatarSpacing : 0);
+  const lineHeight = 1.5;
+  const labelMarginBottom = 20;
+  const labelY = padding; // top padding
+  const messageStartY = padding + labelFontSize + labelMarginBottom;
+
+  // measure bubble HTML
+  useLayoutEffect(() => {
+    if (bubbleContentRef.current) {
+      const r = bubbleContentRef.current.getBoundingClientRect();
+      setBubbleSize({ w: Math.ceil(r.width), h: Math.ceil(r.height) });
+    }
+  }, [
+    label,
+    lines.join('\n'),
+    fontFamily,
+    labelFontSize,
+    textFontSize,
+    avatarSize,
+    avatarSpacing,
+    padding,
+    borderWidth,
+    borderRadius
+  ]);
+
+  // compute tail tip X
+  const tailX = borderRadius + tailOffset * (bubbleSize.w - 2 * borderRadius);
+
+  // favicon
+  useEffect(() => {
+    document.title = 'Chat Bubble Generator';
+    let link = document.querySelector("link[rel~='icon']");
+    if (!link) {
+      link = document.createElement('link');
+      link.rel = 'icon';
+      document.head.appendChild(link);
+    }
+    const canvas = document.createElement('canvas');
+    canvas.width = canvas.height = 64;
+    const ctx = canvas.getContext('2d');
+    ctx.font = '48px serif';
+    ctx.fillText('💬', 8, 50);
+    link.href = canvas.toDataURL();
+  }, []);
+
+  // avatar upload
   const handleImageUpload = e => {
-    const file = e.target.files[0];
-    if (!file) return;
-    const reader = new FileReader();
-    reader.onload = evt => setAvatar(evt.target.result);
-    reader.readAsDataURL(file);
+    const f = e.target.files[0];
+    if (!f) return;
+    const r = new FileReader();
+    r.onload = evt => setAvatar(evt.target.result);
+    r.readAsDataURL(f);
   };
 
+  // download
   const handleDownload = () => {
     document.fonts.ready.then(() => {
       toPng(previewRef.current, { cacheBust: true, backgroundColor: null })
         .then(dataUrl => {
-          const link = document.createElement('a');
-          link.download = 'chat-bubble.png';
-          link.href = dataUrl;
-          link.click();
+          const a = document.createElement('a');
+          a.download = 'chat-bubble.png';
+          a.href = dataUrl;
+          a.click();
         })
-        .catch(err => console.error('Export failed:', err));
+        .catch(console.error);
     });
   };
 
@@ -83,13 +127,13 @@ export default function App() {
     <div className="app-container">
       {/* PREVIEW */}
       <div className="preview">
+        {/* Hidden HTML bubble for measurement */}
         <div
-          className="capture"
-          ref={previewRef}
-          style={{ paddingBottom: `${tailSize}px` }}
+          ref={bubbleContentRef}
+          style={{ position: 'absolute', visibility: 'hidden', top: 0, left: 0 }}
         >
+          {/* (unchanged hidden HTML for sizing) */}
           <div
-            className="bubble"
             style={{
               backgroundColor: bgColor,
               color: textColor,
@@ -99,65 +143,154 @@ export default function App() {
               fontSize: `${textFontSize}px`,
               fontWeight: textFontWeight,
               letterSpacing: `${textTracking}em`,
-              maxWidth: '60vw',
-              whiteSpace: 'pre-wrap',
               lineHeight: 1.4,
+              border: `${borderWidth}px solid ${borderColor}`,
+              boxSizing: 'border-box',
+              display: 'inline-block'
             }}
           >
             <div
-              className="label"
               style={{
                 fontFamily,
                 fontSize: `${labelFontSize}px`,
                 fontWeight: labelFontWeight,
                 letterSpacing: `${labelTracking}em`,
-                color: '#7a7d85',
-                marginBottom: '8px',
-                marginLeft: avatar ? `${avatarSize + avatarSpacing}px` : 0,
+                color: labelTextColor,
+                marginBottom: labelMarginBottom,
+                marginLeft: avatar ? avatarSize + avatarSpacing : 0
               }}
             >
               {label}
             </div>
-
-            <div
-              className="message-row"
-              style={{
-                display: 'flex',
-                alignItems: 'flex-start',
-                gap: `${avatarSpacing}px`,
-              }}
-            >
+            <div style={{ display: 'flex', gap: avatarSpacing, alignItems: 'flex-start' }}>
               <img
                 src={avatar}
-                alt="avatar"
-                className="avatar-img"
+                alt=""
                 style={{
-                  width: `${avatarSize}px`,
-                  height: `${avatarSize}px`,
+                  width: avatarSize,
+                  height: avatarSize,
+                  borderRadius: '50%'
                 }}
               />
-              <div className="text-content">
-                {text.split('\n').map((line, i) => (
-                  <p key={i}>{line}</p>
+              <div>
+                {lines.map((ln, i) => (
+                  <p key={i} style={{ margin: 0 }}>{ln}</p>
                 ))}
               </div>
             </div>
           </div>
+        </div>
 
+        {/* The SVG bubble + tail */}
+        {bubbleSize.w > 0 && (
           <svg
-            width={tailSize}
-            height={tailSize}
-            className="speech-tail"
-            style={{
-              left: `${borderRadius}px`,
-            }}
+            ref={previewRef}
+            width={bubbleSize.w}
+            height={bubbleSize.h + tailSize + borderWidth}
+            viewBox={`0 0 ${bubbleSize.w} ${bubbleSize.h + tailSize + borderWidth}`}
+            style={{ overflow: 'visible' }}
           >
-            <polygon
-              points={`0,0 ${tailSize},0 0,${tailSize}`}
+            {/* 1) STROKE PATH */}
+            <path
+              d={`
+                M 0 ${borderRadius}
+                A ${borderRadius} ${borderRadius} 0 0 1 ${borderRadius} 0
+                H ${bubbleSize.w - borderRadius}
+                A ${borderRadius} ${borderRadius} 0 0 1 ${bubbleSize.w} ${borderRadius}
+                V ${bubbleSize.h - borderRadius}
+                A ${borderRadius} ${borderRadius} 0 0 1 ${bubbleSize.w - borderRadius} ${bubbleSize.h}
+                H ${tailX}
+                L ${tailX + tailSize},${bubbleSize.h}
+                L ${tailX},${bubbleSize.h + tailSize}
+                L ${tailX},${bubbleSize.h}
+                H ${borderRadius}
+                A ${borderRadius} ${borderRadius} 0 0 1 0 ${bubbleSize.h - borderRadius}
+                Z
+              `}
+              fill="none"
+              stroke={borderColor}
+              strokeWidth={borderWidth * 2}
+              vectorEffect="non-scaling-stroke"
+              strokeLinejoin="round"
+            />
+
+            {/* 2) FILL PATH */}
+            <path
+              d={`
+                M 0 ${borderRadius}
+                A ${borderRadius} ${borderRadius} 0 0 1 ${borderRadius} 0
+                H ${bubbleSize.w - borderRadius}
+                A ${borderRadius} ${borderRadius} 0 0 1 ${bubbleSize.w} ${borderRadius}
+                V ${bubbleSize.h - borderRadius}
+                A ${borderRadius} ${borderRadius} 0 0 1 ${bubbleSize.w - borderRadius} ${bubbleSize.h}
+                H ${tailX}
+                L ${tailX + tailSize},${bubbleSize.h}
+                L ${tailX},${bubbleSize.h + tailSize}
+                L ${tailX},${bubbleSize.h}
+                H ${borderRadius}
+                A ${borderRadius} ${borderRadius} 0 0 1 0 ${bubbleSize.h - borderRadius}
+                Z
+              `}
               fill={bgColor}
             />
+
+            {/* 3) CONTENT as pure SVG */}
+            {/* Label Text */}
+            <text
+              x={textX}
+              y={labelY}
+              fill={labelTextColor}
+              fontFamily={fontFamily}
+              fontSize={labelFontSize}
+              fontWeight={labelFontWeight}
+              letterSpacing={`${labelTracking}em`}
+              dominantBaseline="text-before-edge"
+            >
+              {label}
+            </text>
+
+            {/* Avatar via foreignObject */}
+            {avatar && (
+              <foreignObject
+                x={padding}
+                y={messageStartY}
+                width={avatarSize}
+                height={avatarSize}
+              >
+                <div xmlns="http://www.w3.org/1999/xhtml" style={{ width: avatarSize, height: avatarSize }}>
+                  <img
+                    src={avatar}
+                    alt=""
+                    style={{
+                      width: avatarSize,
+                      height: avatarSize,
+                      borderRadius: '50%',
+                      flexShrink: 0
+                    }}
+                  />
+                </div>
+              </foreignObject>
+            )}
+
+            {/* Message Text */}
+            <text
+              x={textX}
+              y={messageStartY}
+              fill={textColor}
+              fontFamily={fontFamily}
+              fontSize={textFontSize}
+              fontWeight={textFontWeight}
+              letterSpacing={`${textTracking}em`}
+              dominantBaseline="text-before-edge"
+            >
+              {lines.map((line, i) => (
+                <tspan key={i} x={textX} dy={i === 0 ? 0 : `${lineHeight}em`}>
+                  {line}
+                </tspan>
+              ))}
+            </text>
           </svg>
-        </div>
+        )}
       </div>
 
       {/* CONTROLS */}
@@ -191,6 +324,12 @@ export default function App() {
             value={textColor}
             onChange={e => setTextColor(e.target.value)}
           />
+          <label>Label Text Color</label>
+          <input
+            type="color"
+            value={labelTextColor}
+            onChange={e => setLabelTextColor(e.target.value)}
+          />
           <label>Border Radius ({borderRadius}px)</label>
           <input
             type="range"
@@ -202,10 +341,33 @@ export default function App() {
           <label>Padding ({padding}px)</label>
           <input
             type="range"
-            min="8"
+            min="0"
             max="64"
             value={padding}
             onChange={e => setPadding(+e.target.value)}
+          />
+          {/* New Border Controls */}
+          <label>Border Width ({borderWidth}px)</label>
+          <input
+            type="range"
+            min="0"
+            max="20"
+            value={borderWidth}
+            onChange={e => setBorderWidth(+e.target.value)}
+          />
+          <label>Border Color</label>
+          <input
+            type="color"
+            value={borderColor}
+            onChange={e => setBorderColor(e.target.value)}
+          />
+          <label>Tail Position ({Math.round(tailOffset*100)}%)</label>
+          <input
+            type="range"
+            min="0"
+            max="25"
+            value={tailOffset*100}
+            onChange={e => setTailOffset(e.target.value/100)}
           />
         </div>
 
@@ -275,10 +437,22 @@ export default function App() {
           <input
             type="range"
             step="0.005"
-            min="0"
+            min="-0.015"
             max="0.1"
             value={textTracking}
             onChange={e => setTextTracking(+e.target.value)}
+          />
+        </div>
+        {/* Wrapping */}
+        <div className="control-group">
+          <h3>Wrapping</h3>
+          <label>Words per Line ({wordsPerLine})</label>
+          <input
+            type="range"
+            min="1"
+            max="10"
+            value={wordsPerLine}
+            onChange={e => setWordsPerLine(+e.target.value)}
           />
         </div>
 
