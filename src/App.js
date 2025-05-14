@@ -60,6 +60,11 @@ export default function App() {
   const labelMarginBottom = 20;
   const labelY = padding; // top padding
   const messageStartY = padding + labelFontSize + labelMarginBottom;
+  
+  // SVG dimensions
+  const strokePad = borderWidth
+  const svgWidth  = bubbleSize.w + strokePad * 2
+  const svgHeight = bubbleSize.h + tailSize + strokePad * 2
 
   // measure bubble HTML
   useLayoutEffect(() => {
@@ -185,9 +190,9 @@ export default function App() {
         {bubbleSize.w > 0 && (
           <svg
             ref={previewRef}
-            width={bubbleSize.w}
-            height={bubbleSize.h + tailSize + borderWidth}
-            viewBox={`0 0 ${bubbleSize.w} ${bubbleSize.h + tailSize + borderWidth}`}
+            width={svgWidth}
+            height={svgHeight}
+            viewBox={`-${strokePad} -${strokePad} ${svgWidth} ${svgHeight}`}
             style={{ overflow: 'visible' }}
           >
             {/* 1) STROKE PATH */}
